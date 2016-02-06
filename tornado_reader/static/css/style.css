@@ -135,10 +135,12 @@ button::-moz-focus-inner {
 /* special */
 body.login .panel {
   box-sizing: border-box;
-  width: 50%;
-  float: left;
   padding: 0 1em;
   font-weight: 300; }
+  @media only screen and (min-width: 30.063em) {
+    body.login .panel {
+      width: 50%;
+      float: left; } }
   body.login .panel h2 {
     font-weight: 300;
     border-bottom: 1px solid #e5e5e5;
