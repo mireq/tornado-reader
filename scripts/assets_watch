@@ -1,0 +1,8 @@
+#!/bin/sh
+
+python scripts/compile_scss.py tornado_reader/static/css/style.scss
+
+while true; do
+	inotifywait -e modify -e move -r tornado_reader/static
+	python scripts/compile_scss.py tornado_reader/static/css/style.scss
+done
