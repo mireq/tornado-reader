@@ -15,7 +15,7 @@ from tornado.web import url
 import handlers
 
 
-define('port', default=8000, type=int)
+define('port', default=8100, type=int)
 
 
 class Application(tornado.web.Application):
