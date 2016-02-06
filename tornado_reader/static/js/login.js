@@ -38,7 +38,14 @@ _.elemAppend(signupForm, 'BUTTON', {'type': 'submit'}, 'Sign up');
 
 _.bindEvent(signupForm, 'submit', function(e) {
 	e.preventDefault();
-	var formData = _.dict(_.serializeForm(signupForm));
+	var formData = _.urlencode(_.serializeForm(signupForm));
+	_.xhrSend({
+		url: '/signup/',
+		method: 'POST',
+		data: formData,
+		successFn: function() {
+		}
+	});
 	console.log(formData);
 });
 

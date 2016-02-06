@@ -201,6 +201,90 @@ var serializeForm = function(formElement) {
 	return q;
 };
 
+var urlencode = function(fields) {
+	var q = [];
+	forEach(fields, function(val) {
+		q.push(encodeURIComponent(val[0]) + '=' + encodeURIComponent(val[1]));
+	});
+	return q.join('&');
+};
+
 window._utils.serializeForm = serializeForm;
+window._utils.urlencode = urlencode;
+
+/* ajax */
+var createXMLHttpRequest;
+
+if (window.XMLHttpRequest) {
+	createXMLHttpRequest = function() { return new XMLHttpRequest(); };
+}
+else {
+	createXMLHttpRequest = function() { return new ActiveXObject("Microsoft.XMLHTTP"); };
+}
+
+var xhrSendFail = function() {};
+
+var xhrSend = function(options) {
+	var method = options.method || 'GET';
+	var url = options.url;
+	var data = options.data || '';
+	var successFn = options.successFn;
+	var failFn = options.failFn || window._utils.xhrSendFail;
+	var headersFn = options.headersFn;
+	var req = createXMLHttpRequest();
+	var extraHeaders = options.extraHeaders || {};
+
+	if (options.progress) {
+		_.bindEvent(req.upload, 'progress', options.progress);
+	}
+
+	req.open(method, url, true);
+	req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	if (options.contentType !== undefined) {
+		if (options.contentType !== null) {
+			req.setRequestHeader('Content-method', options.contentType);
+		}
+	}
+	else {
+		if (method == 'POST') {
+			req.setRequestHeader('Content-method', 'application/x-www-form-urlencoded');
+		}
+	}
+	for (var header in extraHeaders) {
+		req.setRequestHeader(header, extraHeaders[header]);
+	}
+
+	req.onreadystatechange = function () {
+		if (req.readyState === 2) {
+			if (headersFn !== undefined) {
+				headersFn(req);
+			}
+		}
+		if (req.readyState != 4) return;
+
+		var contentType = req.getResponseHeader('content-type');
+		var data = req.responseText;
+		if (contentType !== null && contentType.indexOf('application/json') === 0) {
+			data = JSON.parse(data);
+			req.isJSON = true;
+		}
+
+		if (req.status >= 200 && req.status < 400) {
+			if (successFn !== undefined) {
+				successFn(data, req, options);
+			}
+		}
+		else {
+			if (failFn !== undefined) {
+				failFn(data, req, options);
+			}
+		}
+	};
+
+	req.send(data);
+	return req;
+};
+
+window._utils.xhrSend = xhrSend;
 
 })();

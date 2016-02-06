@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from tornado.web import asynchronous, RequestHandler, Application
 from persistence import User
+import json
 
 
 class BaseHandler(RequestHandler):
@@ -13,6 +14,13 @@ class BaseHandler(RequestHandler):
 		else:
 			return None
 
+	def write_ajax_error(self, message=None):
+		self.set_header('Content-Type', 'application/json')
+		data = {'status': 'error'}
+		if message is not None:
+			data['message'] = message
+		self.write(json.dumps(data))
+
 
 class HomeHandler(BaseHandler):
 	def get(self):
@@ -20,3 +28,11 @@ class HomeHandler(BaseHandler):
 			return self.render('login.html')
 		else:
 			return self.render('home.html')
+
+
+class SignupHandler(BaseHandler):
+	def post(self):
+		email = self.get_argument('email', '')
+		password = self.get_argument('password', '')
+		password2 = self.get_argument('password2', '')
+		print(email, password, password2)

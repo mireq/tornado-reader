@@ -9,6 +9,8 @@ import ZODB, ZODB.FileStorage
 import tornado.ioloop
 import tornado.options
 import tornado.web
+import transaction
+from BTrees.OOBTree import OOBTree
 from tornado.options import define, options
 from tornado.web import url
 
@@ -22,6 +24,7 @@ class Application(tornado.web.Application):
 	def __init__(self, **overrides):
 		url_handlers = [
 			url(r'/', handlers.HomeHandler, name='home'),
+			url(r'/signup/', handlers.SignupHandler, name='signup'),
 		]
 
 		settings = {
@@ -39,8 +42,13 @@ class Application(tornado.web.Application):
 		storage = ZODB.FileStorage.FileStorage(self.settings['db_path'])
 		db = ZODB.DB(storage)
 		connection = db.open()
-		self.db = connection.root
+		self.db = connection.root()
 
+		db_tables = ['users']
+		for tbl in db_tables:
+			if not tbl in self.db:
+				self.db['users'] = OOBTree()
+		transaction.commit()
 
 def main():
 	tornado.options.parse_command_line()
