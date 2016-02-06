@@ -1,0 +1,4 @@
+feedparser
+pip-tools
+tornado
+ZODB
