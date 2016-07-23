@@ -1,6 +1,8 @@
-database.fs*
-*.pyc
-*.pyo
 *.mo
-.ropeproject
+*.pyc
+*.swo
+*.swp
+*.un~
 __pycache__
+/db.sqlite3
+/static/CACHE/

@@ -1,4 +1,3 @@
-feedparser
-pip-tools
+Django
 tornado
-ZODB
+pip-tools
